@@ -48,11 +48,11 @@ async function validateUser(req, res, next) {
 
 async function validatePost(req, res, next) {
   // DO YOUR MAGIC
-  try {
+  
     const { text } = req.body;
-    if (!text.length || !text.trim()) {
+    if (!text || !text.trim()) {
      res.status(400).json({
-      message:"missing required text filed"
+      message:"missing required text field"
      });
     }
     else {
@@ -60,11 +60,9 @@ async function validatePost(req, res, next) {
       next();
     }
   }
-  catch (err) {
-    next(err);
-  }
 
-}
+
+
 
 // do not forget to expose these functions to other modules
 
