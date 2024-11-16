@@ -1,17 +1,76 @@
+const User = require('../users/users-model');
+
+
 function logger(req, res, next) {
   // DO YOUR MAGIC
+  const timeStamp = new Date().toLocaleString();
+  const method = req.method;
+  const url = req.originalUrl;
+  console.log(`[${timeStamp}] ${method} to ${url}`);
+  next();
 }
 
-function validateUserId(req, res, next) {
+async function validateUserId(req, res, next) {
   // DO YOUR MAGIC
+  try {
+    const user = await User.getById(req.params.id);
+    if (user) {
+      req.user = user;
+      next();
+    }
+    else {
+      next({ status: 404, message: 'user not found' });
+    }
+  }
+  catch (error) {
+    next(error);
+  }
 }
 
-function validateUser(req, res, next) {
+async function validateUser(req, res, next) {
   // DO YOUR MAGIC
+  try {
+    const { name } = req.body;
+    if (name !== undefined &&
+      typeof name === 'string' &&
+      name.length && name.trim().length) {
+      req.name = name;
+      next();
+    }
+    else {
+      next({ status: 400, message: 'missing required name field' });
+    }
+  }
+  catch (error) {
+    next(error);
+  }
 }
 
-function validatePost(req, res, next) {
+async function validatePost(req, res, next) {
   // DO YOUR MAGIC
+  try {
+    const { text } = req.body;
+    if (!text.length || !text.trim()) {
+     res.status(400).json({
+      message:"missing required text filed"
+     });
+    }
+    else {
+      req.text = text.trim();
+      next();
+    }
+  }
+  catch (err) {
+    next(err);
+  }
+
 }
 
 // do not forget to expose these functions to other modules
+
+module.exports = {
+  logger,
+  validateUserId,
+  validatePost,
+  validateUser
+};
